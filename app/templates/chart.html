@@ -1,0 +1,256 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='images/backgrounds/report-bg.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .chart-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 2rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-container {
+        height: 400px;
+        margin-bottom: 2rem;
+    }
+
+    .chart-explanation {
+        margin-top: 1rem;
+        font-size: 0.9rem;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="chart-card">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-chart-bar me-2"></i>Health Metrics Visualization</h2>
+        <div>
+            {% if report.prediction %}
+                <span class="badge bg-danger fs-6 p-2">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Heart Disease Risk
+                </span>
+            {% else %}
+                <span class="badge bg-success fs-6 p-2">
+                    <i class="fas fa-check-circle me-1"></i>No Heart Disease Risk
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Comparison with Previous Reports</h5>
+        </div>
+        <div class="card-body">
+            <div class="chart-container">
+                <canvas id="metricsChart"></canvas>
+            </div>
+            <div class="chart-explanation">
+                <p>
+                    This chart compares your current health metrics with the average of your previous reports.
+                    Significant changes in these metrics over time may indicate changes in heart health.
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Blood Pressure & Cholesterol</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="bpCholChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Heart Rate & ST Depression</h5>
+                </div>
+                <div class="card-body">
+                    <div class="chart-container">
+                        <canvas id="heartRateChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Understanding Your Results</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Key Metrics Explained:</h6>
+                    <ul>
+                        <li><strong>Resting Blood Pressure:</strong> Normal range is typically below 120/80 mm Hg.</li>
+                        <li><strong>Serum Cholesterol:</strong> Desirable levels are below 200 mg/dL.</li>
+                        <li><strong>Maximum Heart Rate:</strong> Varies by age, but a higher maximum heart rate during exercise is generally associated with better cardiovascular fitness.</li>
+                        <li><strong>ST Depression:</strong> ST depression induced by exercise is an indicator used to evaluate heart function during stress tests.</li>
+                    </ul>
+                </div>
+                <div class="col-md-6">
+                    <h6>What These Charts Tell You:</h6>
+                    <ul>
+                        <li>Comparing your current metrics with previous readings helps track changes over time.</li>
+                        <li>Consistent improvements in these metrics often indicate improved heart health.</li>
+                        <li>Sudden or significant changes may warrant discussion with your healthcare provider.</li>
+                        <li>These visualizations are meant to complement, not replace, professional medical advice.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+
+        <div>
+            <a href="{{ url_for('prediction.view_report', report_id=report.id) }}" class="btn btn-primary me-2">
+                <i class="fas fa-file-medical me-2"></i>View Full Report
+            </a>
+            <a href="{{ url_for('prediction.download_report', report_id=report.id) }}" class="btn btn-primary">
+                <i class="fas fa-download me-2"></i>Download Report
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Parse chart data from server
+        const chartData = JSON.parse('{{ chart_data|safe }}');
+
+        // Create main comparison chart
+        const metricsCtx = document.getElementById('metricsChart').getContext('2d');
+        new Chart(metricsCtx, {
+            type: 'radar',
+            data: {
+                labels: chartData.labels,
+                datasets: [
+                    {
+                        label: 'Current Report',
+                        data: chartData.current,
+                        backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(54, 162, 235, 1)',
+                        pointRadius: 4
+                    },
+                    {
+                        label: 'Previous Average',
+                        data: chartData.previous,
+                        backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 2,
+                        pointBackgroundColor: 'rgba(255, 99, 132, 1)',
+                        pointRadius: 4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    r: {
+                        angleLines: {
+                            display: true
+                        },
+                        suggestedMin: 0
+                    }
+                }
+            }
+        });
+
+        // Create BP and Cholesterol chart
+        const bpCholCtx = document.getElementById('bpCholChart').getContext('2d');
+        new Chart(bpCholCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Resting Blood Pressure', 'Serum Cholesterol'],
+                datasets: [
+                    {
+                        label: 'Current Report',
+                        data: [{{ report.trestbps }}, {{ report.chol }}],
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Previous Average',
+                        data: [chartData.previous[1], chartData.previous[2]],
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        // Create Heart Rate and ST Depression chart
+        const heartRateCtx = document.getElementById('heartRateChart').getContext('2d');
+        new Chart(heartRateCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Maximum Heart Rate', 'ST Depression'],
+                datasets: [
+                    {
+                        label: 'Current Report',
+                        data: [{{ report.thalach }}, {{ report.oldpeak }}],
+                        backgroundColor: 'rgba(54, 162, 235, 0.7)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Previous Average',
+                        data: [chartData.previous[3], chartData.previous[4]],
+                        backgroundColor: 'rgba(255, 99, 132, 0.7)',
+                        borderColor: 'rgba(255, 99, 132, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

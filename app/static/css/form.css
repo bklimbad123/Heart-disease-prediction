@@ -1,0 +1,44 @@
+/* Prediction form specific styles */
+
+.form-card {
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    padding: 2rem;
+}
+
+.form-card h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.form-help {
+    font-size: 0.8rem;
+    color: #7f8c8d;
+    margin-top: 0.25rem;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+.form-label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+@media (max-width: 768px) {
+    .form-card {
+        padding: 1.5rem;
+    }
+}

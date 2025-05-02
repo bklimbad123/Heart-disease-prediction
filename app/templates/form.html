@@ -1,0 +1,263 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/form.css') }}">
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='images/backgrounds/form-bg.png') }}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .form-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 2rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-help {
+        font-size: 0.85rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="form-card">
+    <h2 class="mb-4"><i class="fas fa-stethoscope me-2"></i>Heart Disease Prediction Form</h2>
+
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+
+        <!-- 🔹 Name Field -->
+        <div class="mb-3">
+            {{ form.name.label(class="form-label") }}
+            {% if form.name.errors %}
+                {{ form.name(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.name.errors %}
+                        {{ error }}
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.name(class="form-control") }}
+            {% endif %}
+            <div class="form-help">Enter your full name</div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.age.label(class="form-label") }}
+                {% if form.age.errors %}
+                    {{ form.age(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.age.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.age(class="form-control") }}
+                {% endif %}
+                <div class="form-help">Enter age in years</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form.gender.label(class="form-label") }}
+                {% if form.gender.errors %}
+                    {{ form.gender(class="form-select is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.gender.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.gender(class="form-select") }}
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.cp.label(class="form-label") }}
+                {% if form.cp.errors %}
+                    {{ form.cp(class="form-select is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.cp.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.cp(class="form-select") }}
+                {% endif %}
+                <div class="form-help">Type of chest pain experienced</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form.trestbps.label(class="form-label") }}
+                {% if form.trestbps.errors %}
+                    {{ form.trestbps(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.trestbps.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.trestbps(class="form-control") }}
+                {% endif %}
+                <div class="form-help">Resting blood pressure in mm Hg</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.chol.label(class="form-label") }}
+                {% if form.chol.errors %}
+                    {{ form.chol(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.chol.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.chol(class="form-control") }}
+                {% endif %}
+                <div class="form-help">Serum cholesterol in mg/dl</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form.fbs.label(class="form-label") }}
+                {% if form.fbs.errors %}
+                    {{ form.fbs(class="form-select is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.fbs.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.fbs(class="form-select") }}
+                {% endif %}
+                <div class="form-help">Fasting blood sugar > 120 mg/dl</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.restecg.label(class="form-label") }}
+                {% if form.restecg.errors %}
+                    {{ form.restecg(class="form-select is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.restecg.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.restecg(class="form-select") }}
+                {% endif %}
+                <div class="form-help">Resting electrocardiographic results</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form.thalach.label(class="form-label") }}
+                {% if form.thalach.errors %}
+                    {{ form.thalach(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.thalach.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.thalach(class="form-control") }}
+                {% endif %}
+                <div class="form-help">Maximum heart rate achieved</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                {{ form.exang.label(class="form-label") }}
+                {% if form.exang.errors %}
+                    {{ form.exang(class="form-select is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.exang.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.exang(class="form-select") }}
+                {% endif %}
+                <div class="form-help">Exercise induced angina</div>
+            </div>
+
+            <div class="col-md-6 mb-3">
+                {{ form.oldpeak.label(class="form-label") }}
+                {% if form.oldpeak.errors %}
+                    {{ form.oldpeak(class="form-control is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.oldpeak.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.oldpeak(class="form-control") }}
+                {% endif %}
+                <div class="form-help">ST depression induced by exercise relative to rest</div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-4 mb-3">
+                {{ form.slope.label(class="form-label") }}
+                {% if form.slope.errors %}
+                    {{ form.slope(class="form-select is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.slope.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.slope(class="form-select") }}
+                {% endif %}
+                <div class="form-help">Slope of the peak exercise ST segment</div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                {{ form.ca.label(class="form-label") }}
+                {% if form.ca.errors %}
+                    {{ form.ca(class="form-select is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.ca.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.ca(class="form-select") }}
+                {% endif %}
+                <div class="form-help">Number of major vessels colored by fluoroscopy</div>
+            </div>
+
+            <div class="col-md-4 mb-3">
+                {{ form.thal.label(class="form-label") }}
+                {% if form.thal.errors %}
+                    {{ form.thal(class="form-select is-invalid") }}
+                    <div class="invalid-feedback">
+                        {% for error in form.thal.errors %}
+                            {{ error }}
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    {{ form.thal(class="form-select") }}
+                {% endif %}
+                <div class="form-help">Thalassemia type</div>
+            </div>
+        </div>
+
+        <div class="d-grid gap-2 mt-4">
+            {{ form.submit(class="btn btn-primary btn-lg") }}
+        </div>
+    </form>
+</div>
+{% endblock %}

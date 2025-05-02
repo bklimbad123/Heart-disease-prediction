@@ -1,0 +1,298 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/report.css') }}">
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='images/backgrounds/report-bg.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .report-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .report-header {
+        border-bottom: 1px solid #dee2e6;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+    }
+
+    .report-section {
+        margin-bottom: 2rem;
+    }
+
+    .report-table th {
+        width: 40%;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="report-card">
+    <div class="report-header d-flex justify-content-between align-items-center">
+        <div>
+            <h2>Heart Health Report</h2>
+            <p class="text-muted">Generated on {{ report.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+        </div>
+        <div>
+            {% if report.prediction %}
+                <span class="badge bg-danger fs-6 p-2">
+                    <i class="fas fa-exclamation-triangle me-1"></i>Heart Disease Risk
+                </span>
+            {% else %}
+                <span class="badge bg-success fs-6 p-2">
+                    <i class="fas fa-check-circle me-1"></i>No Heart Disease Risk
+                </span>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="report-section">
+        <h4>Prediction Result</h4>
+        <div class="card">
+            <div class="card-body">
+                <p>
+                    Based on the provided health parameters, our model predicts
+                    <strong>{% if report.prediction %}a risk{% else %}no risk{% endif %}</strong>
+                    of heart disease with <strong>{{ (report.confidence * 100)|round(2) }}%</strong> confidence.
+                </p>
+
+                {% if report.prediction %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-info-circle me-2"></i>
+                        This is a predictive assessment and not a medical diagnosis.
+                        Please consult with a healthcare professional for proper evaluation.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="report-section">
+        <h4>Patient Information</h4>
+        <table class="table table-bordered report-table">
+            <tbody>
+                <tr>
+                    <th>name</th>
+                    <td>{{ report.name}}</td>
+                </tr>
+                <tr>
+                    <th>Age</th>
+                    <td>{{ report.age }}</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>{% if report.gender == 1 %}Male{% else %}Female{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Chest Pain Type</th>
+                    <td>
+                        {% if report.cp == 0 %}
+                            Typical Angina
+                        {% elif report.cp == 1 %}
+                            Atypical Angina
+                        {% elif report.cp == 2 %}
+                            Non-anginal Pain
+                        {% elif report.cp == 3 %}
+                            Asymptomatic
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resting Blood Pressure</th>
+                    <td>{{ report.trestbps }} mm Hg</td>
+                </tr>
+                <tr>
+                    <th>Serum Cholesterol</th>
+                    <td>{{ report.chol }} mg/dl</td>
+                </tr>
+                <tr>
+                    <th>Fasting Blood Sugar > 120 mg/dl</th>
+                    <td>{% if report.fbs == 1 %}Yes{% else %}No{% endif %}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="report-section">
+        <h4>Medical Measurements</h4>
+        <table class="table table-bordered report-table">
+            <tbody>
+                <tr>
+                    <th>Resting ECG Results</th>
+                    <td>
+                        {% if report.restecg == 0 %}
+                            Normal
+                        {% elif report.restecg == 1 %}
+                            ST-T Wave Abnormality
+                        {% elif report.restecg == 2 %}
+                            Left Ventricular Hypertrophy
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Maximum Heart Rate</th>
+                    <td>{{ report.thalach }}</td>
+                </tr>
+                <tr>
+                    <th>Exercise Induced Angina</th>
+                    <td>{% if report.exang == 1 %}Yes{% else %}No{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>ST Depression</th>
+                    <td>{{ report.oldpeak }}</td>
+                </tr>
+                <tr>
+                    <th>ST Segment Slope</th>
+                    <td>
+                        {% if report.slope == 0 %}
+                            Upsloping
+                        {% elif report.slope == 1 %}
+                            Flat
+                        {% elif report.slope == 2 %}
+                            Downsloping
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Major Vessels Count</th>
+                    <td>{{ report.ca }}</td>
+                </tr>
+                <tr>
+                    <th>Thalassemia</th>
+                    <td>
+                        {% if report.thal == 0 %}
+                            Normal
+                        {% elif report.thal == 1 %}
+                            Fixed Defect
+                        {% elif report.thal == 2 %}
+                            Reversible Defect
+                        {% elif report.thal == 3 %}
+                            Unknown
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="report-section">
+        <h4>Recommendations</h4>
+        <div class="card">
+            <div class="card-body">
+                {% if report.prediction %}
+                    <ul>
+                        <li>Consult with a healthcare professional as soon as possible</li>
+                        <li>Share this report with your doctor</li>
+                        <li>Consider lifestyle changes that may improve heart health:
+                            <ul>
+                                <li>Regular physical activity</li>
+                                <li>Heart-healthy diet low in saturated fats and sodium</li>
+                                <li>Maintain a healthy weight</li>
+                                <li>Quit smoking if applicable</li>
+                                <li>Limit alcohol consumption</li>
+                                <li>Manage stress</li>
+                            </ul>
+                        </li>
+                        <li>Monitor your heart health regularly</li>
+                    </ul>
+                {% else %}
+                    <ul>
+                        <li>Continue maintaining a healthy lifestyle</li>
+                        <li>Regular check-ups with your healthcare provider</li>
+                        <li>Monitor your heart health periodically</li>
+                        <li>Stay active and maintain a balanced diet</li>
+                        <li>Manage stress effectively</li>
+                        <li>Avoid smoking and limit alcohol consumption</li>
+                    </ul>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="d-flex justify-content-between mt-4">
+        <a href="{{ url_for('main.dashboard') }}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i>Back to Dashboard
+        </a>
+
+        <div>
+            <a href="{{ url_for('prediction.download_report', report_id=report.id) }}" class="btn btn-primary me-2">
+                <i class="fas fa-download me-2"></i>Download Report
+            </a>
+            <button id="emailReportBtn" class="btn btn-primary" data-report-id="{{ report.id }}">
+                <i class="fas fa-envelope me-2"></i>Email Report
+            </button>
+            <a href="{{ url_for('prediction.chart', report_id=report.id) }}" class="btn btn-primary ms-2">
+                <i class="fas fa-chart-bar me-2"></i>View Charts
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const emailButton = document.getElementById('emailReportBtn');
+
+        emailButton.addEventListener('click', function() {
+            const reportId = this.getAttribute('data-report-id');
+
+            // Disable button and show loading state
+            this.disabled = true;
+            this.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+
+            // Send AJAX request
+            fetch(`/email/${reportId}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Show alert based on response
+                const alertClass = data.success ? 'alert-success' : 'alert-danger';
+                const alertDiv = document.createElement('div');
+                alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
+                alertDiv.innerHTML = `
+                    ${data.message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+
+                // Insert alert at the top of the report card
+                const reportCard = document.querySelector('.report-card');
+                reportCard.insertBefore(alertDiv, reportCard.firstChild);
+
+                // Reset button state
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-envelope me-2"></i>Email Report';
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                // Reset button state
+                this.disabled = false;
+                this.innerHTML = '<i class="fas fa-envelope me-2"></i>Email Report';
+
+                // Show error alert
+                const alertDiv = document.createElement('div');
+                alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                alertDiv.innerHTML = `
+                    Failed to send email. Please try again.
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                `;
+
+                const reportCard = document.querySelector('.report-card');
+                reportCard.insertBefore(alertDiv, reportCard.firstChild);
+            });
+        });
+    });
+</script>
+{% endblock %}

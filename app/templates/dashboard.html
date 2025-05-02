@@ -1,0 +1,160 @@
+{% extends "base.html" %}
+
+{% block styles %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/dashboard.css') }}">
+<style>
+    body {
+        background-image: url("{{ url_for('static', filename='images/backgrounds/dashboard-bg.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        background-attachment: fixed;
+    }
+
+    .dashboard-card {
+        background-color: rgba(255, 255, 255, 0.9);
+        border-radius: 10px;
+        padding: 2rem;
+        margin-top: 2rem;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .report-card {
+        transition: transform 0.3s ease;
+    }
+
+    .report-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .risk-high {
+        border-left: 5px solid #dc3545;
+    }
+
+    .risk-low {
+        border-left: 5px solid #198754;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-card">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2><i class="fas fa-tachometer-alt me-2"></i>Dashboard</h2>
+        <a href="{{ url_for('prediction.predict') }}" class="btn btn-primary">
+            <i class="fas fa-plus-circle me-2"></i>New Prediction
+        </a>
+    </div>
+
+    {% if reports %}
+        <div class="row">
+            {% for report in reports %}
+                <div class="col-md-6 mb-4">
+                    <div class="card report-card {% if report.prediction %}risk-high{% else %}risk-low{% endif %}">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                {% if report.prediction %}
+                                    <span class="text-danger">
+                                        <i class="fas fa-exclamation-triangle me-2"></i>Heart Disease Risk
+                                    </span>
+                                {% else %}
+                                    <span class="text-success">
+                                        <i class="fas fa-check-circle me-2"></i>No Heart Disease Risk
+                                    </span>
+                                {% endif %}
+                            </h5>
+                            <p class="card-text">
+                                <strong>Name:</strong> {{ report.name }} <br>
+                                <strong>Date:</strong> {{ report.timestamp.strftime('%Y-%m-%d %H:%M') }}<br>
+                                <strong>Confidence:</strong> {{ (report.confidence * 100)|round(2) }}%<br>
+                                <strong>Age:</strong> {{ report.age }} |
+                                <strong>Gender:</strong> {% if report.gender == 1 %}Male{% else %}Female{% endif %}
+                            </p>
+                            <div class="btn-group w-100" role="group">
+                                <a href="{{ url_for('prediction.view_report', report_id=report.id) }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-file-medical me-1"></i> View
+                                </a>
+                                <a href="{{ url_for('prediction.download_report', report_id=report.id) }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-download me-1"></i> Download
+                                </a>
+                                <button class="btn btn-outline-primary email-report" data-report-id="{{ report.id }}">
+                                    <i class="fas fa-envelope me-1"></i> Email
+                                </button>
+                                <a href="{{ url_for('prediction.chart', report_id=report.id) }}" class="btn btn-outline-primary">
+                                    <i class="fas fa-chart-bar me-1"></i> Charts
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>You don't have any prediction reports yet.
+            <a href="{{ url_for('prediction.predict') }}">Create your first prediction</a>.
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle email report buttons
+        const emailButtons = document.querySelectorAll('.email-report');
+        emailButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const reportId = this.getAttribute('data-report-id');
+
+                // Disable button and show loading state
+                this.disabled = true;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin me-1"></i> Sending...';
+
+                // Send AJAX request
+                fetch(`/email/${reportId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // Show alert based on response
+                    const alertClass = data.success ? 'alert-success' : 'alert-danger';
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = `alert ${alertClass} alert-dismissible fade show`;
+                    alertDiv.innerHTML = `
+                        ${data.message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+
+                    // Insert alert at the top of the dashboard card
+                    const dashboardCard = document.querySelector('.dashboard-card');
+                    dashboardCard.insertBefore(alertDiv, dashboardCard.firstChild);
+
+                    // Reset button state
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-envelope me-1"></i> Email';
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Reset button state
+                    this.disabled = false;
+                    this.innerHTML = '<i class="fas fa-envelope me-1"></i> Email';
+
+                    // Show error alert
+                    const alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+                    alertDiv.innerHTML = `
+                        Failed to send email. Please try again.
+                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                    `;
+
+                    const dashboardCard = document.querySelector('.dashboard-card');
+                    dashboardCard.insertBefore(alertDiv, dashboardCard.firstChild);
+                });
+            });
+        });
+    });
+</script>
+{% endblock %}

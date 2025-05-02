@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heart Disease Prediction Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ddd;
+            padding-bottom: 10px;
+        }
+        .report-section {
+            margin-bottom: 30px;
+        }
+        h1 {
+            color: #2c3e50;
+        }
+        h2 {
+            color: #3498db;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+        th, td {
+            padding: 12px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+            width: 40%;
+        }
+        .prediction {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+        .prediction-high {
+            background-color: #ffebee;
+            border-left: 5px solid #f44336;
+        }
+        .prediction-low {
+            background-color: #e8f5e9;
+            border-left: 5px solid #4caf50;
+        }
+        .footer {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #777;
+            border-top: 1px solid #eee;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Heart Disease Prediction Report</h1>
+        <p>Generated on {{ report.timestamp.strftime('%Y-%m-%d %H:%M') }}</p>
+    </div>
+
+    <div class="report-section">
+        <h2>Prediction Result</h2>
+        <div class="prediction {% if report.prediction %}prediction-high{% else %}prediction-low{% endif %}">
+            <p>
+                Based on the provided health parameters, our model predicts
+                <strong>{% if report.prediction %}a risk{% else %}no risk{% endif %}</strong>
+                of heart disease with <strong>{{ (report.confidence * 100)|round(2) }}%</strong> confidence.
+            </p>
+
+            {% if report.prediction %}
+                <p>
+                    <strong>Note:</strong> This is a predictive assessment and not a medical diagnosis.
+                    Please consult with a healthcare professional for proper evaluation.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="report-section">
+        <h2>Patient Information</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Age</th>
+                    <td>{{ report.age }}</td>
+                </tr>
+                <tr>
+                    <th>Gender</th>
+                    <td>{% if report.gender == 1 %}Male{% else %}Female{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>Chest Pain Type</th>
+                    <td>
+                        {% if report.cp == 0 %}
+                            Typical Angina
+                        {% elif report.cp == 1 %}
+                            Atypical Angina
+                        {% elif report.cp == 2 %}
+                            Non-anginal Pain
+                        {% elif report.cp == 3 %}
+                            Asymptomatic
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Resting Blood Pressure</th>
+                    <td>{{ report.trestbps }} mm Hg</td>
+                </tr>
+                <tr>
+                    <th>Serum Cholesterol</th>
+                    <td>{{ report.chol }} mg/dl</td>
+                </tr>
+                <tr>
+                    <th>Fasting Blood Sugar > 120 mg/dl</th>
+                    <td>{% if report.fbs == 1 %}Yes{% else %}No{% endif %}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="report-section">
+        <h2>Medical Measurements</h2>
+        <table>
+            <tbody>
+                <tr>
+                    <th>Resting ECG Results</th>
+                    <td>
+                        {% if report.restecg == 0 %}
+                            Normal
+                        {% elif report.restecg == 1 %}
+                            ST-T Wave Abnormality
+                        {% elif report.restecg == 2 %}
+                            Left Ventricular Hypertrophy
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Maximum Heart Rate</th>
+                    <td>{{ report.thalach }}</td>
+                </tr>
+                <tr>
+                    <th>Exercise Induced Angina</th>
+                    <td>{% if report.exang == 1 %}Yes{% else %}No{% endif %}</td>
+                </tr>
+                <tr>
+                    <th>ST Depression</th>
+                    <td>{{ report.oldpeak }}</td>
+                </tr>
+                <tr>
+                    <th>ST Segment Slope</th>
+                    <td>
+                        {% if report.slope == 0 %}
+                            Upsloping
+                        {% elif report.slope == 1 %}
+                            Flat
+                        {% elif report.slope == 2 %}
+                            Downsloping
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Major Vessels Count</th>
+                    <td>{{ report.ca }}</td>
+                </tr>
+                <tr>
+                    <th>Thalassemia</th>
+                    <td>
+                        {% if report.thal == 0 %}
+                            Normal
+                        {% elif report.thal == 1 %}
+                            Fixed Defect
+                        {% elif report.thal == 2 %}
+                            Reversible Defect
+                        {% elif report.thal == 3 %}
+                            Unknown
+                        {% endif %}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="report-section">
+        <h2>Recommendations</h2>
+        {% if report.prediction %}
+            <ul>
+                <li>Consult with a healthcare professional as soon as possible</li>
+                <li>Share this report with your doctor</li>
+                <li>Consider lifestyle changes that may improve heart health:
+                    <ul>
+                        <li>Regular physical activity</li>
+                        <li>Heart-healthy diet low in saturated fats and sodium</li>
+                        <li>Maintain a healthy weight</li>
+                        <li>Quit smoking if applicable</li>
+                        <li>Limit alcohol consumption</li>
+                        <li>Manage stress</li>
+                    </ul>
+                </li>
+                <li>Monitor your heart health regularly</li>
+            </ul>
+        {% else %}
+            <ul>
+                <li>Continue maintaining a healthy lifestyle</li>
+                <li>Regular check-ups with your healthcare provider</li>
+                <li>Monitor your heart health periodically</li>
+                <li>Stay active and maintain a balanced diet</li>
+                <li>Manage stress effectively</li>
+                <li>Avoid smoking and limit alcohol consumption</li>
+            </ul>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        <p>This report was generated by the Heart Disease Predictor application.</p>
+        <p>Disclaimer: This is a predictive assessment and not a medical diagnosis. Please consult with a healthcare professional for proper evaluation.</p>
+    </div>
+</body>
+</html>

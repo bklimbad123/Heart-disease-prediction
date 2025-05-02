@@ -1,0 +1,42 @@
+/* Auth pages specific styles */
+
+.auth-card {
+    max-width: 500px;
+    margin: 0 auto;
+    padding: 2rem;
+    border-radius: 10px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.auth-card h2 {
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+}
+
+.form-control:focus {
+    border-color: #3498db;
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+.btn-primary {
+    background-color: #3498db;
+    border-color: #3498db;
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.form-label {
+    font-weight: 500;
+}
+
+.text-muted a {
+    color: #3498db;
+    text-decoration: none;
+}
+
+.text-muted a:hover {
+    text-decoration: underline;
+}
