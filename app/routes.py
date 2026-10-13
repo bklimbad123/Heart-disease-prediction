@@ -37,6 +37,11 @@ prediction = Blueprint('prediction', __name__)
 
 
 # Main routes
+@main.route('/favicon.ico')
+def favicon():
+    return redirect(url_for('static', filename='image/favicon.svg'))
+
+
 @main.route('/')
 @main.route('/index')
 def index():

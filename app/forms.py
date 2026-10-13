@@ -43,7 +43,7 @@ class LoginForm(FlaskForm):
 class PredictionForm(FlaskForm):
     name = StringField('Full Name', validators=[DataRequired(),Regexp(r'^[A-Za-z\s]+$', message="Name must contain only letters and spaces.")])  # Added name field
 
-    age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=1, max=120)], message="age must contain only number and in between 1-120")
+    age = IntegerField('Age', validators=[DataRequired(), NumberRange(min=1, max=120, message="Age must be between 1 and 120.")])
 
     gender = SelectField('Gender', choices=[(-1, 'Select Gender'), (1, 'Male'), (0, 'Female')],
                          coerce=int, validators=[NumberRange(min=0, max=1, message="This field is required.")])
@@ -51,9 +51,9 @@ class PredictionForm(FlaskForm):
     cp = SelectField('Chest Pain Type', choices=[(-1, 'Select Chest Pain Type'), (0, 'Typical Angina'), (1, 'Atypical Angina'),
                               (2, 'Non-anginal Pain'), (3, 'Asymptomatic')], coerce=int, validators=[NumberRange(min=0, max=3, message="This field is required.")])
 
-    trestbps = IntegerField('Resting Blood Pressure (mm Hg)', validators=[DataRequired(), NumberRange(min=50, max=250)],message="Range is in between 50-250 only")
+    trestbps = IntegerField('Resting Blood Pressure (mm Hg)', validators=[DataRequired(), NumberRange(min=50, max=250, message="Range is between 50 and 250.")])
 
-    chol = IntegerField('Serum Cholesterol (mg/dl)', validators=[DataRequired(), NumberRange(min=100, max=600)],message="Range is in between 100-600 only")
+    chol = IntegerField('Serum Cholesterol (mg/dl)', validators=[DataRequired(), NumberRange(min=100, max=600, message="Range is between 100 and 600.")])
 
     fbs = SelectField('Fasting Blood Sugar > 120 mg/dl', choices=[(-1, 'Select Option'),(1, 'True'), (0, 'False')],
                       coerce=int, validators=[NumberRange(min=0, max=1, message="This field is required.")])
@@ -61,11 +61,11 @@ class PredictionForm(FlaskForm):
     restecg = SelectField('Resting ECG Results', choices=[(-1, 'Select Option'), (0, 'Normal'), (1, 'ST-T Wave Abnormality'), (2, 'Left Ventricular Hypertrophy')],
                           coerce=int, validators=[NumberRange(min=0, max=2, message="This field is required.")])
 
-    thalach = IntegerField('Maximum Heart Rate Achieved', validators=[DataRequired(), NumberRange(min=50, max=250)],message="Range is in between 50-250 only")
+    thalach = IntegerField('Maximum Heart Rate Achieved', validators=[DataRequired(), NumberRange(min=50, max=250, message="Range is between 50 and 250.")])
 
     exang = SelectField('Exercise Induced Angina', choices=[(-1, 'Select Option'), (1, 'Yes'), (0, 'No')], coerce=int, validators=[NumberRange(min=0, max=1, message="This field is required.")])
 
-    oldpeak = FloatField('ST Depression Induced by Exercise', validators=[DataRequired()],message="Range is in between 0-7 only")
+    oldpeak = FloatField('ST Depression Induced by Exercise', validators=[DataRequired(), NumberRange(min=0, max=7, message="Range is between 0 and 7.")])
 
     slope = SelectField('Slope of Peak Exercise ST Segment',
                         choices=[(-1, 'Select Option'), (0, 'Upsloping'), (1, 'Flat'), (2, 'Downsloping')],
