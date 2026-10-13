@@ -9,8 +9,7 @@
 
 # production
 /build
-/venv2
-/venv
+.venv
 
 # debug
 npm-debug.log*
